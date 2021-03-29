@@ -31,3 +31,24 @@ function saveRecord(record) {
   // add record to your store with add method.
   store.add(record);
 }
+
+function checkDatabase() {
+    //this line opens a transaction on your pending db
+    const transaction = db.transaction(["pending"], "readwrite");
+    // here we are accessing the pending object store
+    const store = transaction.objectStore("pending");
+    // here we get all the records from store and set to a variable
+    const getAll = store.getAll();
+  
+    getAll.onsuccess = function() {
+      if (getAll.result.length > 0) {
+        fetch("/api/transaction/bulk", {
+          method: "POST",
+          body: JSON.stringify(getAll.result),
+          headers: {
+            Accept: "application/json, text/plain, */*",
+            "Content-Type": "application/json"
+          }
+        })
+
+
